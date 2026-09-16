@@ -7,7 +7,8 @@
 // 首次编译时 Typst 自动下载并缓存，之后可离线编译。
 //
 // 图中约定：
-//   水面为 y = 0；滑轮在 P(0, 2.2)，即水面之上 h = 2.2 的岸顶，与岸顶等高；
+//   水面为 y = 0；滑轮在 P(0, 2.56)，即水面之上 h = 2.56；
+//   滑轮与卷扬机绞盘同高，使「卷扬机 → 滑轮」这段绳保持水平；
 //   B 是 P 正下方水面上的点，用作 h 与 x 两条尺寸线的基准；
 //   船到滑轮的水平距离为 x；theta 是绳与水平方向的夹角，顶点画在船头，
 //   与正文题注「绳与水平方向夹角 theta」一致；
@@ -35,7 +36,7 @@
   let c-drum = rgb("#5c6b7a")
 
   // ---- 关键点 ----
-  let P = (0, 2.2) // 滑轮中心（岸顶，水面之上 h = 2.2）
+  let P = (0, 2.56) // 滑轮中心：水面之上 h = 2.56，与卷扬机绞盘等高
   let B = (0, 0) // 滑轮正下方水面上的点：h 与 x 的尺寸基准
   let winch = (-3.2, 2.56) // 卷扬机（绞盘）中心，坐在岸顶 y = 2.2 上
   let bow = (6.9, 0.32) // 船头系绳点
@@ -54,8 +55,9 @@
   line((0, 0), (-5.8, 0), stroke: (paint: c-land-line, thickness: 1pt))
 
   // ---- 岸壁立柱与滑轮 ----
-  // 立柱只从水面（y = 0）立到滑轮（y = 2.2），不再伸到水面以下
-  line((0, 0), (0, 2.2), stroke: (paint: c-stroke, thickness: 1.6pt))
+  // 立柱自水面（y = 0）立到滑轮（y = 2.56）：岸顶以上露出一小截托住滑轮，
+  // 不再像原来那样伸到水面以下
+  line((0, 0), (0, 2.56), stroke: (paint: c-stroke, thickness: 1.6pt))
   circle(P, radius: .3, fill: white, stroke: (paint: c-stroke, thickness: 1.4pt))
   circle(P, radius: .075, fill: c-stroke)
 
@@ -132,11 +134,11 @@
   content((-3.15, 3.5), text(fill: c-stroke, size: 9pt)[卷扬机])
   content((7.75, 1.65), text(fill: c-boat, size: 9pt)[船])
   content((-5.55, 1.85), text(fill: c-land-line, size: 9pt)[岸])
-  // 收绳速率 u：贴在绳的上方，随绳倾斜。
-  // Typst 的 calc.atan2(a, b) 等价于标准 atan2(y: b, x: a)，且返回角度；
-  // 绳自卷扬机到滑轮向右下走，故取 (水平跨度, 落差) 得顺时针的小角度。
+  // 收绳速率 u：贴在绳的上方。滑轮与卷扬机等高，故绳角为 0（水平）；
+  // 若以后调高/调低滑轮，仍按 (水平跨度, 落差) 计算即可——Typst 的
+  // calc.atan2(a, b) 等价于标准 atan2(y: b, x: a)，返回的正是顺时针角度。
   let 绳角 = calc.atan2(P.at(0) - winch.at(0), winch.at(1) - P.at(1))
-  content((-1.45, 2.62), text(fill: c-rope, size: 9pt)[收绳速率 $u$], angle: 绳角)
+  content((-1.45, 2.82), text(fill: c-rope, size: 9pt)[收绳速率 $u$], angle: 绳角)
   // 船速 v：船头下方指向滑轮的箭头 + 文字
   line((6.85, -1.62), (5.65, -1.62), stroke: (paint: c-boat, thickness: 1pt),
     mark: (end: "stealth"), mark-size: .16, mark-fill: c-boat, mark-stroke: none)
