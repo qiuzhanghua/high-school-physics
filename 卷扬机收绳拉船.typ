@@ -57,7 +57,7 @@ $ v = (L u)/x $
 又因为 $ cos theta = x/L $
 所以：
 
-$ v = u / cos theta $
+$ v = u / (cos theta) $
 
 其中：
 
@@ -75,7 +75,7 @@ $ v = u / cos theta $
 
 则船沿绳方向的速度分量为：
 
-$ v_("沿绳,船") = v cos theta $
+$ v_(#cjk[沿绳,船]) = v cos theta $
 
 绳长变化率：
 
@@ -83,13 +83,13 @@ $ (dif L)/(dif t) = -u $
 
 而绳长变化率等于“滑轮端沿绳速度”减去“船端沿绳速度”。如果滑轮端固定（不动），则：
 
-$ (dif L)/(dif t) = - v_("沿绳,船") = - v cos theta $
+$ (dif L)/(dif t) = - v_(#cjk[沿绳,船]) = - v cos theta $
 
 所以：
 
 $ - v cos theta = -u $
 
-#rect(stroke: 0.5pt, inset: 6pt, $ v = u / cos theta $)
+#rect(stroke: 0.5pt, inset: 6pt, $ v = u / (cos theta) $)
 
 *这个公式是通用的*：只要滑轮端固定，船沿绳方向的分量就是 $v cos theta$，它等于收绳速率 $u$。
 
@@ -111,23 +111,23 @@ $ v_2 cos beta = v_1 cos alpha - u $
 
 *解*：
 
-$ v = u / cos theta = 2 / cos 60 degree = 2 / 0.5 = 4 upright("m/s") $
+$ v = u / (cos theta) = 2 / (cos 60 degree) = 2 / 0.5 = 4 upright("m/s") $
 
 船的速度为 $4 upright("m/s")$，方向水平向岸。
 
 == 易错点
 
 1. *误用 $v = u cos theta$*
-  这是最常见的错误。正确的是 $v = u / cos theta$，因为收绳速率是船速沿绳方向的分量，而不是反过来。
+  这是最常见的错误。正确的是 $v = u / (cos theta)$，因为收绳速率是船速沿绳方向的分量，而不是反过来。
 
 2. *忘记绳长变化*
-  如果题目说“绳长不变”，则用 $v_1 cos theta_1 = v_2 cos theta_2$；如果说“收绳”“绳缩短”，则用 $v = u / cos theta$。
+  如果题目说“绳长不变”，则用 $v_1 cos theta_1 = v_2 cos theta_2$；如果说“收绳”“绳缩短”，则用 $v = u / (cos theta)$。
 
 3. *角度找错*
   $theta$ 是绳与*船运动方向*的夹角，不是绳与水平方向的夹角（除非船沿水平运动）。
 
 4. *符号问题*
-  收绳速率 $u$ 取正值，表示绳在缩短；如果绳在伸长，则 $u$ 取负值，或公式中改为 $v = -u / cos theta$。
+  收绳速率 $u$ 取正值，表示绳在缩短；如果绳在伸长，则 $u$ 取负值，或公式中改为 $v = -u / (cos theta)$。
 
 == 总结
 
@@ -135,7 +135,7 @@ $ v = u / cos theta = 2 / cos 60 degree = 2 / 0.5 = 4 upright("m/s") $
   columns: 2,
   [*情况*], [*公式*],
   [绳长不变，两端沿绳分量相等], [$v_1 cos theta_1 = v_2 cos theta_2$],
-  [滑轮固定，收绳速率 $u$，绳与船速夹角 $theta$], [$v = u / cos theta$],
+  [滑轮固定，收绳速率 $u$，绳与船速夹角 $theta$], [$v = u / (cos theta)$],
   [滑轮运动，收绳速率 $u$], [$v_1 cos alpha - v_2 cos beta = u$],
 )
 

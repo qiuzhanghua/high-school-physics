@@ -20,10 +20,25 @@
 // 模板内置可直接使用的环境：
 //   #definition[……]  #important-block[……]  #example[……]
 //   #theorem[……]      #proof[……]
+//
+// 数学模式内的中文要用 #cjk[……] 显式指定正文字体，例如 $v_(#cjk[沿绳,船])$，
+// 否则中文会掉到系统默认黑体（数学模式不继承正文的字体列表）。
 // ============================================================
 
 // QED
 #let qed = box(width: 100%, align(right)[$square$])
+
+// ---- 字体 ----
+// 正文字体列表：数学字体在前、中文字体殿后。不要在文档里再做
+// `#set text(font: ...)` 之类的单字体覆盖，那会替换掉整个列表，
+// 使中文失去 CJK 回退。
+#let text-fonts = ("New Computer Modern Math", "Source Han Serif")
+#let cjk-font = "Source Han Serif"
+
+// ---- 数学模式内的中文 ----
+// 数学模式不继承 text-fonts：$v_("沿绳,船")$ 里的中文会落到系统默认黑体，
+// 与正文宋体不一致。数学模式内写中文请用 #cjk[沿绳,船]。
+#let cjk(body) = text(font: cjk-font, body)
 
 // ---- 环境：定义 ----
 #let definition(body) = block(
@@ -128,15 +143,14 @@
     leading: 1em,
   )
 
-  // 字体：数学字体在前、中文字体殿后，保证公式用 Latin Modern Math
-  // 或者 New Computer Modern Math
-  // 中文用 Sarasa Gothic SC 回退。不要再执行 `#set text(font: ...)`
-  // 之类的单字体覆盖，那会替换掉整个字体列表，导致中文失去 CJK 回退。
-  // 使用操作系统的中文字体回退，似乎没有什么问题。
-  // "Noto Sans SC", "Sarasa Gothic SC", "Source Han Serif"
+  // 字体列表见文件顶部的 text-fonts（数学字体在前、中文宋体殿后），
+  // 不要在这里或文档里做单字体覆盖，否则中文会失去 CJK 回退。
+  // 备选中文（作为 fallback 追加即可）："Noto Sans SC"、"Sarasa Gothic SC"。
+  // lang: "zh" 让 Typst 采用中文排版规则，并把图注前缀本地化为“图 1”。
   set text(
-    font: ("New Computer Modern Math", "Source Han Serif"),
+    font: text-fonts,
     size: text-size,
+    lang: "zh",
   )
 
   set math.equation(numbering: equation-numbering)
