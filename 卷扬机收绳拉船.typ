@@ -59,10 +59,6 @@ $ v = (L u)/x $
 
 $ v = u / cos theta $
 
-== 结论
-
-#rect(stroke: 0.5pt, inset: 6pt, $ v = u / cos theta $)
-
 其中：
 
 - $v$：船的水平速度
