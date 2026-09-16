@@ -7,8 +7,10 @@
 // 首次编译时 Typst 自动下载并缓存，之后可离线编译。
 //
 // 图中约定：
-//   滑轮在原点 P（岸边高处），绳与水平方向夹角为 theta；
-//   船到滑轮的水平距离为 x，滑轮相对水面的高度为 h；
+//   水面为 y = 0；滑轮在 P(0, 2.2)，即水面之上 h = 2.2 的岸顶，与岸顶等高；
+//   B 是 P 正下方水面上的点，用作 h 与 x 两条尺寸线的基准；
+//   船到滑轮的水平距离为 x；theta 是绳与水平方向的夹角，顶点画在船头，
+//   与正文题注「绳与水平方向夹角 theta」一致；
 //   收绳速率 u 沿绳指向滑轮，船速 v 沿水平方向指向滑轮。
 
 #import "@preview/cetz:0.3.4": canvas, draw, vector, angle as cetz-angle
@@ -33,25 +35,27 @@
   let c-drum = rgb("#5c6b7a")
 
   // ---- 关键点 ----
-  let P = (0, 0) // 滑轮中心（岸边高处）
-  let B = (0, -2.2) // 滑轮正下方：水面，用作 h 的另一端与角的水平边
-  let winch = (-3.2, 0.35) // 卷扬机（绞盘）中心
+  let P = (0, 2.2) // 滑轮中心（岸顶，水面之上 h = 2.2）
+  let B = (0, 0) // 滑轮正下方水面上的点：h 与 x 的尺寸基准
+  let winch = (-3.2, 2.56) // 卷扬机（绞盘）中心，坐在岸顶 y = 2.2 上
   let bow = (6.9, 0.32) // 船头系绳点
   let deck-stern = (8.3, -0.25) // 船尾甲板点
   let deck-bow = bow // 船头甲板点
 
   // ---- 背景 ----
-  rect((-5.8, -2.6), (8.6, 2.5), fill: c-sky, stroke: none)
-  // 水
+  rect((-5.8, -2.6), (8.6, 3.9), fill: c-sky, stroke: none)
+  // 水（水面在 y = 0）
   rect((-5.8, -2.2), (8.6, 0), fill: c-water, stroke: none)
   line((-5.8, 0), (8.6, 0), stroke: (paint: c-water-line, thickness: 1pt))
-  // 岸：岸壁与岸顶平台
+  // 岸：岸壁与岸顶平台（岸顶 y = 2.2，与滑轮等高）
   line((0, 0), (-5.8, 0), (-5.8, 2.2), (0, 2.2),
     fill: c-land, stroke: none, close: true)
+  line((-5.8, 2.2), (0, 2.2), stroke: (paint: c-land-line, thickness: 1pt))
   line((0, 0), (-5.8, 0), stroke: (paint: c-land-line, thickness: 1pt))
 
-  // ---- 立柱与滑轮 ----
-  line((0, -2.2), (0, 0.3), stroke: (paint: c-stroke, thickness: 1.6pt))
+  // ---- 岸壁立柱与滑轮 ----
+  // 立柱只从水面（y = 0）立到滑轮（y = 2.2），不再伸到水面以下
+  line((0, 0), (0, 2.2), stroke: (paint: c-stroke, thickness: 1.6pt))
   circle(P, radius: .3, fill: white, stroke: (paint: c-stroke, thickness: 1.4pt))
   circle(P, radius: .075, fill: c-stroke)
 
@@ -63,8 +67,8 @@
     stroke: (paint: c-stroke, thickness: 1pt),
     radius: .07,
   )
-  line(winch, (-3.6, 1.05), stroke: (paint: c-stroke, thickness: 1.4pt))
-  line((-3.6, 1.05), (-3.85, 0.95), stroke: (paint: c-stroke, thickness: 1.4pt))
+  line(winch, (-3.6, 3.26), stroke: (paint: c-stroke, thickness: 1.4pt))
+  line((-3.6, 3.26), (-3.85, 3.16), stroke: (paint: c-stroke, thickness: 1.4pt))
 
   // ---- 船体 ----
   // 船身所在水域：水线约 y = -1.05，船底曲线最低点 ≈ -1.05（船浮在水上）
@@ -88,13 +92,16 @@
   // ---- 绳：卷扬机 → 滑轮 → 船头 ----
   line(winch, P, bow, stroke: (paint: c-rope, thickness: 1.6pt))
 
-  // ---- 夹角 theta：绳与水平方向的夹角 ----
+  // ---- 夹角 theta：绳与水平方向的夹角（顶点在船头，与正文一致）----
+  // 水平参考线自船头向左（指向滑轮）延伸，theta 就是它与绳之间的锐角
+  line((bow.at(0), bow.at(1)), (bow.at(0) - 2.2, bow.at(1)),
+    stroke: (paint: c-aux, thickness: .5pt, dash: "dashed"))
   cetz-angle.angle(
-    P, B, bow,
-    radius: 1.25,
+    bow, P, (bow.at(0) - 2.2, bow.at(1)),
+    radius: 1.15,
     label: $theta$,
     direction: "ccw",
-    label-radius: 70%,
+    label-radius: 72%,
     stroke: (paint: c-aux, thickness: .8pt),
   )
 
@@ -116,18 +123,20 @@
       angle: 旋转, frame: "rect", padding: .06, fill: c-sky, stroke: none)
   }
 
-  // h：滑轮 → 水面（尺寸线在立柱右侧，文字竖排）
+  // h：水面（B）→ 滑轮（尺寸线在立柱右侧，文字竖排）
   尺寸线(B, P, $h$, -0.4, 旋转: 90deg)
-  // x：滑轮正下方 → 船头（尺寸线在船底以下）
-  尺寸线(B, (bow.at(0), B.at(1)), $x$, 0.75)
+  // x：滑轮正下方水面点 → 船头（负偏移，尺寸线放在水线以下）
+  尺寸线(B, (bow.at(0), B.at(1)), $x$, -0.75)
 
   // ---- 文字标注 ----
-  content((-3.15, 1.05), text(fill: c-stroke, size: 9pt)[卷扬机])
+  content((-3.15, 3.5), text(fill: c-stroke, size: 9pt)[卷扬机])
   content((7.75, 1.65), text(fill: c-boat, size: 9pt)[船])
   content((-5.55, 1.85), text(fill: c-land-line, size: 9pt)[岸])
-  // 收绳速率 u：贴在绳的上方，随绳倾斜（Typst 的 atan2 取 (x, y) 并返回角度）
-  let 绳角 = calc.atan2(P.at(0) - winch.at(0), P.at(1) - winch.at(1))
-  content((-1.45, 0.36), text(fill: c-rope, size: 9pt)[收绳速率 $u$], angle: 绳角)
+  // 收绳速率 u：贴在绳的上方，随绳倾斜。
+  // Typst 的 calc.atan2(a, b) 等价于标准 atan2(y: b, x: a)，且返回角度；
+  // 绳自卷扬机到滑轮向右下走，故取 (水平跨度, 落差) 得顺时针的小角度。
+  let 绳角 = calc.atan2(P.at(0) - winch.at(0), winch.at(1) - P.at(1))
+  content((-1.45, 2.62), text(fill: c-rope, size: 9pt)[收绳速率 $u$], angle: 绳角)
   // 船速 v：船头下方指向滑轮的箭头 + 文字
   line((6.85, -1.62), (5.65, -1.62), stroke: (paint: c-boat, thickness: 1pt),
     mark: (end: "stealth"), mark-size: .16, mark-fill: c-boat, mark-stroke: none)
