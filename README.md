@@ -24,6 +24,75 @@ PowerShell 下用 `./build.ps1`（参数为 `-Only 卷扬机收绳拉船`、`-Ou
 
 编译后 PDF 与源文件同目录（`.gitignore` 已忽略 `*.pdf`）。
 
+## 字体依赖：思源宋体（Source Han Serif）
+
+`template.typ` 里把正文字体写成了
+
+```typst
+#let text-fonts = ("New Computer Modern Math", "Source Han Serif")
+#let cjk-font = "Source Han Serif"
+```
+
+所以中文字形依赖系统里装有 **Source Han Serif**（思源宋体，Google 版的等价字体是
+`Noto Serif CJK SC`）。**缺失时 Typst 不会报错，而是静默回退到系统其他中文字体**，
+版面会悄悄变样——换机器编译前最好先查一下。
+
+### 检查是否已装
+
+```bash
+typst fonts | grep -i "source han serif"      # Linux / macOS
+typst fonts | Select-String "Source Han Serif" # Windows PowerShell
+```
+
+只要列出 `Source Han Serif`（或 `Noto Serif CJK SC`）即可。本仓库已在 macOS 上实测：
+
+- 本机装的是**可变字体**（`SourceHanSerifVF-*.ttf`），weight 250–900 全档可用；
+- 正文默认 = weight 400（Regular），`#strong[...]` = 700（Bold），正常；
+- 用到的 521 个非 ASCII 字符（简体、繁体、中文标点、希腊字母、数学符号）**全部有字形**；
+- `Source Han Serif CN / TC / TW` 这几个**族名**查不到，但字形已被 `SC`（简体）与
+  `HC / HK`（繁体、港区）覆盖，不影响使用；`Source Han Serif Light / Medium / Bold`
+  这类"按字重命名的族"也查不到，属正常——字重请用 `weight:` 选择，不要换族名。
+
+### 下载安装
+
+| 来源 | 地址 |
+|---|---|
+| Adobe 官方（思源宋体，含各语言子集与可变字体） | <https://github.com/adobe-fonts/source-han-serif/releases> |
+| Google Noto（等价字体 `Noto Serif CJK SC`） | <https://github.com/notofonts/noto-cjk/releases> |
+
+装完后：
+
+- **Windows**：右键 `.ttf` / `.otf` → "为所有用户安装"（或直接选字体文件安装）；
+- **macOS**：双击字体文件 → "安装字体"（或放到 `~/Library/Fonts/`）；
+- **Linux**：把字体文件复制到 `~/.local/share/fonts/`（或 `/usr/share/fonts/`），
+  然后执行 `fc-cache -fv`。
+
+### 字符覆盖自检（可选）
+
+想把仓库里用到的所有非 ASCII 字符丢给 Typst 渲染一遍、看有没有缺字，可以跑：
+
+```bash
+python3 - <<'PY'
+import glob, io
+chars = set()
+for p in ["卷扬机收绳拉船.typ", "template.typ"] + glob.glob("figures/*.typ"):
+    chars |= {c for c in io.open(p, encoding="utf-8").read() if ord(c) > 0x2000}
+io.open("/tmp/cover.typ", "w", encoding="utf-8").write(
+    '#set page(width: 18cm, height: auto, margin: 1cm)\n'
+    '#set text(font: ("New Computer Modern Math", "Source Han Serif"), lang: "zh", size: 16pt)\n'
+    + "".join(sorted(chars)))
+print("待检测字符数:", len(chars))
+PY
+typst compile /tmp/cover.typ /tmp/cover.pdf    # 输出里出现 warning/missing 才说明缺字
+```
+
+### 换字体
+
+若目标机器上确实没有思源宋体，也可以改用其他中文字体（把 `template.typ` 顶部的
+`text-fonts` / `cjk-font` 换掉即可），例如 `"Noto Serif CJK SC"`、`"Source Han Sans SC"`、
+`"Sarasa Gothic SC"`。注意只改字体**列表的最后一项**，不要用
+`#set text(font: ...)` 做单字体覆盖，否则会顶掉数学字体、中文失去 CJK 回退。
+
 ## 插图依赖：CeTZ
 
 `figures/` 下的插图用 [CeTZ](https://typst.app/universe/package/cetz/) 绘制，目前已指定
