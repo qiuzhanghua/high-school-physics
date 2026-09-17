@@ -7,7 +7,7 @@
 ```
 template.typ              文档模板（页面、字体、标题样式、定义/定理等环境）
 卷扬机收绳拉船.typ          正文文档
-图/                       插图（CeTZ 绘制，可单独编译预览）
+figures/                  插图（CeTZ 绘制，可单独编译预览）
 build                     批量编译脚本（Linux / macOS / Git Bash）
 build.ps1                 批量编译脚本（Windows PowerShell）
 ```
@@ -26,7 +26,7 @@ PowerShell 下用 `./build.ps1`（参数为 `-Only 卷扬机收绳拉船`、`-Ou
 
 ## 插图依赖：CeTZ
 
-`图/` 下的插图用 [CeTZ](https://typst.app/universe/package/cetz/) 绘制，目前已指定
+`figures/` 下的插图用 [CeTZ](https://typst.app/universe/package/cetz/) 绘制，目前已指定
 **0.5.2** 版本（`#import "@preview/cetz:0.5.2": ...`）。
 
 > **版本注意**
@@ -117,7 +117,7 @@ CeTZ 上游 master 与 0.5.x 同步演进。若想改用别的版本，把两张
 ### 校验是否装好
 
 ```bash
-typst compile 图/卷扬机收绳拉船.typ /tmp/fig.pdf   # 应无报错，/tmp/fig.pdf 非空
+typst compile figures/winch-boat.typ /tmp/fig.pdf   # 应无报错，/tmp/fig.pdf 非空
 ```
 
 ### 离线/受限网络的另一种办法：本地包目录

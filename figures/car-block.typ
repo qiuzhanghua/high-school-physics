@@ -18,7 +18,7 @@
 // 单独编译时置 true，自带图注；被主文档 `#import` 时置 false。
 #let with-preview = true
 
-#let 收绳拉物体图() = canvas(length: 1cm, {
+#let car-block-figure() = canvas(length: 1cm, {
   import draw: *
 
   // ---- 配色 ----
@@ -109,7 +109,7 @@
 // 单独编译本文件时，自带图注便于预览。
 #if with-preview {
   figure(
-    收绳拉物体图(),
+    car-block-figure(),
     caption: [汽车在左侧、以速率 $v$ 向左运动（远离滑轮），通过定滑轮拉物体 $M$],
   )
 }

@@ -1,9 +1,9 @@
 #import "template.typ": *
-// 图由 图/卷扬机收绳拉船.typ 绘制，使用 CeTZ 0.5.2（Typst 官方包仓库的预览包）。
+// 图由 figures/winch-boat.typ 绘制，使用 CeTZ 0.5.2（Typst 官方包仓库的预览包）。
 // 首次编译时 Typst 会自动下载该包并缓存到本地，之后离线可用；
 // 若处于离线或受限网络环境，安装方法见 README.md。
-#import "图/卷扬机收绳拉船.typ": 卷扬机收绳拉船图
-#import "图/收绳拉物体.typ": 收绳拉物体图
+#import "figures/winch-boat.typ": winch-boat-figure
+#import "figures/car-block.typ": car-block-figure
 
 #set document(title: [卷扬机收绳拉船])
 
@@ -26,7 +26,7 @@
 - 船沿水平方向运动，速度为 $v$。
 
 #figure(
-  卷扬机收绳拉船图(),
+  winch-boat-figure(),
   caption: [卷扬机收绳拉船模型：滑轮高 $h$，船到滑轮水平距离 $x$，绳与水平方向夹角 $theta$，收绳速率 $u$，船速 $v$],
 )
 
@@ -142,7 +142,7 @@ $ v = u / (cos theta) = 2 / (cos 60 degree) = 2 / 0.5 = 4 upright("m/s") $
 == 练 7：绳关联速度的分解（汽车拉物体）
 
 #figure(
-  收绳拉物体图(),
+  car-block-figure(),
   caption: [汽车在左侧、以速率 $v$ 向左运动（远离滑轮），通过定滑轮拉物体 $M$],
 )
 
