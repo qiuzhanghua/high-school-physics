@@ -3,7 +3,8 @@
 // 主文档以 `#import` 引入并放在 `#figure` 中；
 // 单独编译本文件时会自带一个 `#figure`，便于预览。
 //
-// 依赖：CeTZ 0.3.4（Typst 官方包仓库预览包 @preview/cetz:0.3.4）。
+// 依赖：CeTZ 0.5.2（Typst 官方包仓库预览包 @preview/cetz:0.5.2，
+// 其自身依赖 @preview/oxifmt:1.0.0）。
 // 首次编译时 Typst 自动下载并缓存，之后可离线编译。
 //
 // 图中约定（按教材原图）：
@@ -12,7 +13,7 @@
 //   theta 是绳与水平方向的夹角（锐角），顶点在绳与汽车的连接处；
 //   汽车向左运动时 x 增大，theta 越来越小（x -> oo 时 theta -> 0）。
 
-#import "@preview/cetz:0.3.4": canvas, draw, vector, angle as cetz-angle
+#import "@preview/cetz:0.5.2": canvas, draw, vector, angle as cetz-angle
 
 // 单独编译时置 true，自带图注；被主文档 `#import` 时置 false。
 #let with-preview = true

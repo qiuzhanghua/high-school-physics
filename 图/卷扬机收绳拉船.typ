@@ -3,7 +3,8 @@
 // 主文档以 `#include` 引入，并由 `#figure` 包裹、统一加图注；
 // 单独编译本文件时会自带一个 `#figure`，便于预览。
 //
-// 依赖：CeTZ 0.3.4（Typst 官方包仓库预览包 @preview/cetz:0.3.4）。
+// 依赖：CeTZ 0.5.2（Typst 官方包仓库预览包 @preview/cetz:0.5.2，
+// 其自身依赖 @preview/oxifmt:1.0.0）。
 // 首次编译时 Typst 自动下载并缓存，之后可离线编译。
 //
 // 图中约定：
@@ -14,7 +15,7 @@
 //   与正文题注「绳与水平方向夹角 theta」一致；
 //   收绳速率 u 沿绳指向滑轮，船速 v 沿水平方向指向滑轮。
 
-#import "@preview/cetz:0.3.4": canvas, draw, vector, angle as cetz-angle
+#import "@preview/cetz:0.5.2": canvas, draw, vector, angle as cetz-angle
 
 // 单独编译时置 true，自带图注；被主文档 `#include` 时置 false，
 // 由主文档的 `#figure` 统一加图注。
