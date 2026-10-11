@@ -21,7 +21,6 @@
 
 #problem-box[
   已知排球场半场长度 $l = 9 upright("m")$，排球网高度 $h = 2.25 upright("m")$，重力加速度 $g = 10 upright("m/s")^2$。
-
   运动员在自己半场的端线处跳起，把球沿*水平方向*击出（击出瞬间球的竖直速度为 $0$）。问：发球高度 $H$ 至少为多少，才能保证球*既过网、又落在对方场地内*？此时球的水平速度 $v$ 是多大？
 ]
 
@@ -105,15 +104,21 @@ $ H = 4/3 times 2.25 = 3.0 upright("m") $
 
 再求此时的速度。把 $H = 3.0 upright("m")$ 代入条件二的等号：
 
-$ v^2 = (2 g l^2)/H = (2 times 10 times 9^2)/3.0 = 540 quad ==> quad v = sqrt(540) = 6 sqrt(15) approx 23.2 upright("m/s") $
+$
+  v^2 = (2 g l^2)/H = (2 times 10 times 9^2)/3.0 = 540 quad ==> quad v = sqrt(540) = 6 sqrt(15) approx 23.2 upright("m/s")
+$
 
-#rect(stroke: 0.5pt, inset: 6pt, [答案：发球高度至少 $H = 4/3 h = 3.0 upright("m")$，此时水平速度必须是 $v = 6 sqrt(15) approx 23.2 upright("m/s")$])
+#rect(
+  stroke: 0.5pt,
+  inset: 6pt,
+  [答案：发球高度至少 $H = 4/3 h = 3.0 upright("m")$，此时水平速度必须是 $v = 6 sqrt(15) approx 23.2 upright("m/s")$],
+)
 
 *检验*：$H - h = 3.0 - 2.25 = 0.75 upright("m")$，落到网高所需时间
 
 $ t_1 = sqrt((2 times 0.75)/10) = sqrt(0.15) approx 0.387 upright("s") $
 
-$ v t_1 = 23.24 times 0.387 approx 9.0 upright("m") = l$ —— 球到网时恰好到达网所在竖直面，且高度恰好是网高，*恰好擦网*。
+$v t_1 = 23.24 times 0.387 approx 9.0 upright("m") = l$ —— 球到网时恰好到达网所在竖直面，且高度恰好是网高，*恰好擦网*。
 
 $ t_2 = sqrt((2 times 3.0)/10) = sqrt(0.6) approx 0.775 upright("s") $
 
