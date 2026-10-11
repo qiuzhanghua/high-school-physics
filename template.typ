@@ -19,7 +19,30 @@
 //
 // 模板内置可直接使用的环境：
 //   #definition[……]  #important-block[……]  #example[……]
-//   #theorem[……]      #proof[……]
+//   #theorem[……]      #proof[……]           #remark[……]
+//   #remark 可带小标题：#remark(title: "级数展开视角")[……]
+//
+// 填空横线：#blank()；长度可选，如 #blank(1) / #blank(2) / #blank(5)（单位为 em），
+//   也可直接给长度 #blank(5em)。（不要用 #underline[#h(3em)]，它不显示横线。）
+//
+// 题型框 / 思路框：#problem-box[……]（绿色，放题目）、#idea-box[……]（黄色，放破题思路）。
+//
+// 自动编号与引用：
+//   #definition、#theorem、#remark、#example 都会自动编号
+//   （定义 1…、定理 1…、注 1…、示例 1…，四者各自独立计数、整篇连续）。
+//   在环境后面紧接一个标签即可引用，例如
+//     #definition[……] <def:xxx>
+//     #theorem[……] <thm:xxx>
+//     #example[……] <ex:xxx>
+//     由 @def:xxx 与 @thm:xxx 可知……     // 自动显示为"定义 1""定理 1"
+//     #remark(title: "…")[……] <rem:xxx>
+//     见 @rem:xxx……
+//
+// 环境的选择：
+//   定义/定理 —— 有明确的、待定义或待证明的命题；
+//   证明     —— 定理（或例题结论）的论证过程，自动加「证明」与结尾 □；
+//   示例     —— 具体的例题、练习；
+//   注       —— 补充说明、另一视角、拓展阅读，本身不提新命题，用 #remark。
 //
 // 数学模式内的中文要用 #cjk[……] 显式指定正文字体，例如 $v_(#cjk[沿绳,船])$，
 // 否则中文会掉到系统默认黑体（数学模式不继承正文的字体列表）。
@@ -40,14 +63,40 @@
 // 与正文宋体不一致。数学模式内写中文请用 #cjk[沿绳,船]。
 #let cjk(body) = text(font: cjk-font, body)
 
-// ---- 环境：定义 ----
-#let definition(body) = block(
-  fill: rgb("#e8f4f8"),
-  stroke: rgb("#2c3e50") + .5pt,
-  inset: (x: 12pt, y: 8pt),
-  radius: 4pt,
+// ---- 填空横线 ----
+// 用法：#blank()（默认长度 3）或 #blank(1)、#blank(2)、#blank(4)、#blank(5)…
+//   参数是 em 倍数（无单位数字）；也可直接给长度 #blank(5em)。
+// 横线前后自带空隙，不会与相邻文字贴住。
+// 注意：正文里不要写 #underline[#h(3em)]——Typst 不会给"空内容"画下划线，
+// 那样不会显示任何横线（数式里写成 $underline(#h(3em))$ 才有效果）。
+// （用 ..args 是因为 Typst 不允许把"带默认值的参数"按位置传入。）
+#let blank(..args) = {
+  let n = if args.pos().len() > 0 { args.pos().first() } else { args.named().at("n", default: 3) }
+  let w = if type(n) == length { n } else { n * 1em }
+  h(0.4em) + box(width: w, stroke: (bottom: 0.6pt)) + h(0.4em)
+}
+
+// ---- 环境：定义（自动编号，可在后面加标签供 @ 引用） ----
+// 用法：#definition[……] <def:名字>   →  显示"定义 1"，@def:名字 引用为"定义 1"
+#let definition(body) = figure(
+  kind: "definition",
+  supplement: [定义],
+  numbering: "1",
+  caption: none,
+  gap: 0pt,
+  placement: none,
 )[
-  #strong[定义] #body
+  #align(left)[
+    #block(
+      width: 100%,
+      fill: rgb("#e8f4f8"),
+      stroke: rgb("#2c3e50") + .5pt,
+      radius: 4pt,
+      inset: (x: 12pt, y: 8pt),
+    )[
+      #strong[定义 #context counter(figure.where(kind: "definition")).display()] #body
+    ]
+  ]
 ]
 
 // ---- 环境：重点提示框 ----
@@ -58,26 +107,51 @@
   radius: 4pt,
 )
 
-// ---- 环境：示例 ----
-#let example(body) = block(
-  fill: rgb("#f8f9fa"),
-  stroke: rgb("#6c757d") + .3pt,
-  inset: (x: 12pt, y: 8pt),
-  radius: 4pt,
+// ---- 环境：示例（自动编号，可在后面加标签供 @ 引用） ----
+// 用法：#example[……] <ex:名字>   →  显示"示例 1"，@ex:名字 引用为"示例 1"
+#let example(body) = figure(
+  kind: "example",
+  supplement: [示例],
+  numbering: "1",
+  caption: none,
+  gap: 0pt,
+  placement: none,
 )[
-  #text(fill: rgb("#0d6efd"), weight: "bold")[示例] #body
+  #align(left)[
+    #block(
+      width: 100%,
+      fill: rgb("#f8f9fa"),
+      stroke: rgb("#6c757d") + .3pt,
+      radius: 4pt,
+      inset: (x: 12pt, y: 8pt),
+    )[
+      #text(fill: rgb("#0d6efd"), weight: "bold")[示例 #context counter(figure.where(kind: "example")).display()] #body
+    ]
+  ]
 ]
 
-// ---- 环境：定理 ----
-#let theorem(body) = block(
-  fill: rgb("#f0f4ff"),
-  stroke: rgb("#2e4a7a") + 1.5pt,
-  radius: 4pt,
-  inset: 10pt,
-  spacing: 10pt,
+// ---- 环境：定理（自动编号，可在后面加标签供 @ 引用） ----
+// 用法：#theorem[……] <thm:名字>   →  显示"定理 1"，@thm:名字 引用为"定理 1"
+#let theorem(body) = figure(
+  kind: "theorem",
+  supplement: [定理],
+  numbering: "1",
+  caption: none,
+  gap: 0pt,
+  placement: none,
 )[
-  #text(weight: "bold", size: 1.1em, fill: rgb("#2e4a7a"))[定理] \
-  #body
+  #align(left)[
+    #block(
+      width: 100%,
+      fill: rgb("#f0f4ff"),
+      stroke: rgb("#2e4a7a") + 1.5pt,
+      radius: 4pt,
+      inset: 10pt,
+    )[
+      #text(weight: "bold", size: 1.1em, fill: rgb("#2e4a7a"))[定理 #context counter(figure.where(kind: "theorem")).display()] \
+      #body
+    ]
+  ]
 ]
 
 // ---- 环境：证明 ----
@@ -88,6 +162,30 @@
   #text(weight: "bold", style: "italic")[证明] \
   #body \
   #h(1fr) #text(weight: "bold")[□]
+]
+
+// ---- 环境：注（补充说明、另一视角、拓展阅读；自动编号） ----
+// 用法：#remark[……]  或  #remark(title: "级数展开视角")[……]
+//       #remark[……] <rem:名字>   →  显示"注 1"，@rem:名字 引用为"注 1"
+#let remark(body, title: none) = figure(
+  kind: "remark",
+  supplement: [注],
+  numbering: "1",
+  caption: none,
+  gap: 0pt,
+  placement: none,
+)[
+  #align(left)[
+    #block(
+      width: 100%,
+      fill: rgb("#fffdf2"),
+      stroke: rgb("#b8860b") + .4pt,
+      radius: 4pt,
+      inset: (x: 12pt, y: 8pt),
+    )[
+      #text(weight: "bold", fill: rgb("#8a6d00"))[注 #context counter(figure.where(kind: "remark")).display()#(if title != none [（#title）])] #body
+    ]
+  ]
 ]
 
 // ---- 文档模板 ----
@@ -167,3 +265,24 @@
 
   body
 }
+
+// ===== 题型框 / 思路框 =====
+// 绿色题型框：用于放题目
+#let problem-box(content) = block(
+  fill: rgb("E8F5E9"),
+  inset: 10pt,
+  radius: 4pt,
+  width: 100%,
+  stroke: (left: 4pt + rgb("2E7D32")),
+  content,
+)
+
+// 黄色思路框：用于放破题思路
+#let idea-box(content) = block(
+  fill: rgb("FFFDE7"),
+  inset: 10pt,
+  radius: 4pt,
+  width: 100%,
+  stroke: (left: 4pt + rgb("F9A825")),
+  content,
+)
