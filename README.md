@@ -7,7 +7,11 @@
 ```
 template.typ              文档模板（页面、字体、标题样式、定义/定理等环境）
 卷扬机收绳拉船.typ          正文文档
+排球水平发球最低高度.typ     正文文档
 figures/                  插图（CeTZ 绘制，可单独编译预览）
+  winch-boat.typ            卷扬机收绳拉船
+  car-block.typ             汽车拉物体（绳关联速度）
+  volleyball-serve.typ      排球水平发球（平抛）
 build                     批量编译脚本（Linux / macOS / Git Bash）
 build.ps1                 批量编译脚本（Windows PowerShell）
 ```
