@@ -1,5 +1,12 @@
 // ============================================================
-// template.typ — 高中数理文档共享模板
+// template.typ — 自动生成，请勿手工修改
+// 源：typst-notes@v1.0.0（lib.typ）
+// 重新生成：./sync-template.sh（Windows 用 ./sync-template.ps1）
+// 本仓公式编号默认值：none
+// ============================================================
+
+// ============================================================
+// lib.typ — 数理讲义共享模板（单一源；由各仓根目录的 sync-template.sh 分发为 template.typ）
 //
 // 用法：
 //   #import "template.typ": *
@@ -25,18 +32,16 @@
 // 填空横线：#blank()；长度可选，如 #blank(1) / #blank(2) / #blank(5)（单位为 em），
 //   也可直接给长度 #blank(5em)。（不要用 #underline[#h(3em)]，它不显示横线。）
 //
-// 题型框 / 思路框：#problem-box[……]（绿色，放题目）、#idea-box[……]（黄色，放破题思路）。
-//
 // 自动编号与引用：
 //   #definition、#theorem、#remark、#example 都会自动编号
 //   （定义 1…、定理 1…、注 1…、示例 1…，四者各自独立计数、整篇连续）。
 //   在环境后面紧接一个标签即可引用，例如
-//     #definition[……] <def:xxx>
-//     #theorem[……] <thm:xxx>
-//     #example[……] <ex:xxx>
-//     由 @def:xxx 与 @thm:xxx 可知……     // 自动显示为"定义 1""定理 1"
-//     #remark(title: "…")[……] <rem:xxx>
-//     见 @rem:xxx……
+//     #definition[……] <def:mean>
+//     #theorem[……] <thm:mean>
+//     #example[……] <ex:one>
+//     由 @def:mean 与 @thm:mean 可知……   // 自动显示为"定义 1""定理 1"
+//     #remark(title: "…")[……] <rem:series>
+//     见 @rem:series……
 //
 // 环境的选择：
 //   定义/定理 —— 有明确的、待定义或待证明的命题；
@@ -44,7 +49,7 @@
 //   示例     —— 具体的例题、练习；
 //   注       —— 补充说明、另一视角、拓展阅读，本身不提新命题，用 #remark。
 //
-// 数学模式内的中文要用 #cjk[……] 显式指定正文字体，例如 $v_(#cjk[沿绳,船])$，
+// 数学模式内的中文要用 #cjk[……] 显式指定正文字体，例如 $x_(#cjk[极值点])$，
 // 否则中文会掉到系统默认黑体（数学模式不继承正文的字体列表）。
 // ============================================================
 
@@ -59,8 +64,8 @@
 #let cjk-font = "Source Han Serif"
 
 // ---- 数学模式内的中文 ----
-// 数学模式不继承 text-fonts：$v_("沿绳,船")$ 里的中文会落到系统默认黑体，
-// 与正文宋体不一致。数学模式内写中文请用 #cjk[沿绳,船]。
+// 数学模式不继承 text-fonts：$x_("极值点")$ 里的中文会落到系统默认黑体，
+// 与正文宋体不一致。数学模式内写中文请用 #cjk[极值点]。
 #let cjk(body) = text(font: cjk-font, body)
 
 // ---- 填空横线 ----
@@ -195,9 +200,11 @@
   first-line-indent: none, // 首行缩进（none 表示不缩进）
   page-numbering: none, // 标准页码格式（none 表示不显示页码）
   page-footer: none, // 自定义右对齐页脚，如 "第 1 页"（设置后取代标准页码）
-  equation-numbering: none, // 公式编号格式（none 表示不编号）
+  equation-numbering: none, // 公式编号格式（none 表示不编号）；各仓取值见 .template.conf
   reset-page: false, // 是否将页码重置为 1
   text-size: 12pt, // 正文字号
+  title-size: 24pt, // 一级标题（文档大标题）字号
+  heading-size: 20pt, // 二级标题（一、二、三…）字号
 ) = {
   // 页眉：右侧显示文档标题。
   // 需在文档顶层执行 `#set document(title: [……])`，此处自动读取；
@@ -254,19 +261,19 @@
   set math.equation(numbering: equation-numbering)
 
   show heading.where(level: 1): it => {
-    set text(24pt, weight: "bold")
+    set text(title-size, weight: "bold")
     align(center)[#it]
   }
 
   show heading.where(level: 2): it => {
-    set text(20pt, weight: "bold")
+    set text(heading-size, weight: "bold")
     align(heading2-align)[#it]
   }
 
   body
 }
 
-// ===== 题型框 / 思路框 =====
+// ===== 题型框 / 思路框（供 导数破题思路.typ 等使用）=====
 // 绿色题型框：用于放题目
 #let problem-box(content) = block(
   fill: rgb("E8F5E9"),
