@@ -76,7 +76,9 @@ if (Test-Path -LiteralPath $target) {
 }
 
 if ($Check) {
-    Write-Error "template.typ 与 typst-notes@$tag 不一致，请运行 ./sync-template.ps1 后提交"
+    $msg = "template.typ 与 typst-notes@$tag 不一致，请运行 ./sync-template.ps1 后提交"
+    Write-Error $msg
+    if ($env:GITHUB_ACTIONS) { Write-Host "::error::$msg" }
     exit 1
 }
 

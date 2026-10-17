@@ -77,7 +77,10 @@ if [ -f "$ROOT/template.typ" ] && cmp -s "$TMP" "$ROOT/template.typ"; then
 fi
 
 if [ "$CHECK" -eq 1 ]; then
-  echo "template.typ 与 typst-notes@$TAG 不一致，请运行 ./sync-template.sh 后提交" >&2
+  MSG="template.typ 与 typst-notes@$TAG 不一致，请运行 ./sync-template.sh 后提交"
+  echo "$MSG" >&2
+  # 在 GitHub Actions 里额外的注解，让失败信息直接标在 diff 上
+  [ -n "${GITHUB_ACTIONS:-}" ] && echo "::error::$MSG"
   exit 1
 fi
 
