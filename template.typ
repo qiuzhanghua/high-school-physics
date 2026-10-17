@@ -1,8 +1,8 @@
 // ============================================================
 // template.typ — 自动生成，请勿手工修改
-// 源：typst-notes@v1.0.1（lib.typ）
+// 源：typst-notes@v1.0.2（lib.typ）
 // 重新生成：./sync-template.sh（Windows 用 ./sync-template.ps1）
-// 本仓公式编号默认值：none
+// 本仓参数：EQNUM=none TEXTSIZE=12pt
 // ============================================================
 
 // ============================================================
@@ -51,6 +51,10 @@
 //
 // 数学模式内的中文要用 #cjk[……] 显式指定正文字体，例如 $x_(#cjk[极值点])$，
 // 否则中文会掉到系统默认黑体（数学模式不继承正文的字体列表）。
+//
+// 关于 none / 12pt：这两个是分发时的占位符，由各仓 .template.conf
+// 的 EQNUM / TEXTSIZE 填入后写入该仓的 template.typ（见 sync-template.sh）。
+// 直接引用本文件（而非生成的 template.typ）的写法会把占位符原样当代码，别这么做。
 // ============================================================
 
 // QED
@@ -202,7 +206,7 @@
   page-footer: none, // 自定义右对齐页脚，如 "第 1 页"（设置后取代标准页码）
   equation-numbering: none, // 公式编号格式（none 表示不编号）；各仓取值见 .template.conf
   reset-page: false, // 是否将页码重置为 1
-  text-size: 12pt, // 正文字号
+  text-size: 12pt, // 正文字号；各仓取值见 .template.conf（默认 12pt）
   title-size: 24pt, // 一级标题（文档大标题）字号
   heading-size: 20pt, // 二级标题（一、二、三…）字号
 ) = {
