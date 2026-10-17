@@ -1,0 +1,37 @@
+name: template
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync-check:
+    name: template.typ 与 typst-notes 一致
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 源仓可能还没建（或没公开）——这时不该让本仓 CI 变红，只提示一句。
+      - name: 源仓是否可达
+        id: src
+        shell: bash
+        run: |
+          tag=$(sed -n 's/^TAG=//p' .template.conf | tr -d '\r')
+          url="https://raw.githubusercontent.com/qiuzhanghua/typst-notes/$tag/lib.typ"
+          if curl -fsSL -o /dev/null --retry 2 --max-time 20 "$url"; then
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+            echo "::notice title=跳过模板校验::$url 取不到（源仓还没推送？），本次不校验"
+          fi
+
+      - name: 校验 template.typ
+        if: steps.src.outputs.ok == '1'
+        shell: bash
+        run: |
+          test -x ./sync-template.sh || { echo "::error::缺少 sync-template.sh"; exit 1; }
+          ./sync-template.sh --check
