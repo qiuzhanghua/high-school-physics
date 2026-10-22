@@ -91,11 +91,14 @@ for k in $KEYS; do
 done
 PARAM_DESC="${PARAM_DESC# }"
 
+# 变量后面紧跟全角字符（如「（」「，」）时必须写成 ${TAG}：
+# macOS 自带的 bash 3.2 会把全角括号的首字节当作变量名的一部分，
+# 在 set -u 下直接报 "TAG?: unbound variable"，整个脚本跑不起来。
 BANNER="// ============================================================
 // template.typ — 自动生成，请勿手工修改
-// 源：typst-notes@$TAG（lib.typ）
+// 源：typst-notes@${TAG}（lib.typ）
 // 重新生成：./sync-template.sh（Windows 用 ./sync-template.ps1）
-// 本仓参数：$PARAM_DESC
+// 本仓参数：${PARAM_DESC}
 // ============================================================"
 
 { printf '%s\n\n' "$BANNER"; sed "${SED_ARGS[@]}" "$BODY_TMP"; } > "$TMP"
@@ -106,12 +109,12 @@ if LEFT="$(grep -oE '@@[A-Z_]+@@' "$TMP" | sort -u | tr '\n' ' ')" && [ -n "$LEF
 fi
 
 if [ -f "$ROOT/template.typ" ] && cmp -s "$TMP" "$ROOT/template.typ"; then
-  echo "template.typ 已是最新（typst-notes@$TAG）"
+  echo "template.typ 已是最新（typst-notes@${TAG}）"
   exit 0
 fi
 
 if [ "$CHECK" -eq 1 ]; then
-  MSG="template.typ 与 typst-notes@$TAG 不一致，请运行 ./sync-template.sh 后提交"
+  MSG="template.typ 与 typst-notes@${TAG} 不一致，请运行 ./sync-template.sh 后提交"
   echo "$MSG" >&2
   # 在 GitHub Actions 里额外的注解，让失败信息直接标在 diff 上
   [ -n "${GITHUB_ACTIONS:-}" ] && echo "::error::$MSG"
@@ -119,4 +122,4 @@ if [ "$CHECK" -eq 1 ]; then
 fi
 
 mv "$TMP" "$ROOT/template.typ"
-echo "已更新 template.typ（typst-notes@$TAG，$PARAM_DESC）"
+echo "已更新 template.typ（typst-notes@${TAG}，${PARAM_DESC}）"
