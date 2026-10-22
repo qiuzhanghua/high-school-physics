@@ -15,23 +15,76 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 源仓可能还没建（或没公开）——这时不该让本仓 CI 变红，只提示一句。
-      - name: 源仓是否可达
+      # 先把 TAG 读出来，后面每一步都用它拼 URL / 校验头部注释。
+      - name: 读取 .template.conf
+        id: conf
+        shell: bash
+        run: |
+          test -f .template.conf || { echo "::error::缺少 .template.conf"; exit 1; }
+          tag=$(sed -n 's/^TAG=//p' .template.conf | tr -d '\r' | tail -1)
+          [ -n "$tag" ] || { echo "::error::.template.conf 里没有 TAG"; exit 1; }
+          if ! printf '%s' "$tag" | grep -Eq '^[A-Za-z0-9._-]+$'; then
+            echo "::error::.template.conf 的 TAG 含非法字符：$tag"
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "url=https://raw.githubusercontent.com/qiuzhanghua/typst-notes/$tag/lib.typ" >> "$GITHUB_OUTPUT"
+
+      # 源仓可能还没建、没公开，或网络不通——这时不该让本仓 CI 变红，
+      # 但也不能静默变绿：留一条 warning 注解 + 一段 Summary，明说「没校验」。
+      - name: 探测源仓
         id: src
         shell: bash
         run: |
-          tag=$(sed -n 's/^TAG=//p' .template.conf | tr -d '\r')
-          url="https://raw.githubusercontent.com/qiuzhanghua/typst-notes/$tag/lib.typ"
+          url="${{ steps.conf.outputs.url }}"
           if curl -fsSL -o /dev/null --retry 2 --max-time 20 "$url"; then
-            echo "ok=1" >> "$GITHUB_OUTPUT"
+            echo "mode=ok" >> "$GITHUB_OUTPUT"
+            echo "源仓可达：\`$url\`" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "ok=0" >> "$GITHUB_OUTPUT"
-            echo "::notice title=跳过模板校验::$url 取不到（源仓还没推送？），本次不校验"
+            echo "mode=unreachable" >> "$GITHUB_OUTPUT"
+            echo "::warning title=模板校验被跳过::$url 取不到（私有仓 / 网络不通 / TAG 没推送？）——本次只做本地兜底检查，未与源比对"
+            {
+              echo "## ⚠️ 模板校验被跳过"
+              echo ""
+              echo "取不到 \`$url\`，**没有**校验 \`template.typ\` 是否与 typst-notes 一致。"
+              echo "原因可能是：源仓是私有仓、TAG 没推送、或 runner 出网被拦。"
+              echo ""
+              echo "本地跑同一项校验："
+              echo ""
+              echo '```bash'
+              echo "./sync-template.sh --check"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: 校验 template.typ
-        if: steps.src.outputs.ok == '1'
+      # 与网络无关的底线检查：占位符都替换干净了，头部 TAG 与 conf 一致。
+      - name: 本地兜底检查
         shell: bash
         run: |
-          test -x ./sync-template.sh || { echo "::error::缺少 sync-template.sh"; exit 1; }
+          test -f template.typ || { echo "::error::缺少 template.typ"; exit 1; }
+
+          left=$(grep -oE '@@[A-Z_]+@@' template.typ | sort -u || true)
+          if [ -n "$left" ]; then
+            echo "::error::template.typ 里仍有未替换的占位符：$left"
+            echo "      在 .template.conf 里补上对应 KEY=VALUE 后重新生成。" >&2
+            exit 1
+          fi
+
+          want="typst-notes@${{ steps.conf.outputs.tag }}（lib.typ）"
+          if ! grep -Fq "$want" template.typ; then
+            # 注意：$want 后面紧跟全角「）」，必须写 ${want}——
+            # macOS 的 bash 3.2 会把全角字符的首字节吃进变量名（见 typst-notes README 踩坑）。
+            echo "::error::template.typ 的头部 TAG 与 .template.conf 不一致（期望包含：${want}）"
+            echo "      运行 ./sync-template.sh 重新生成后提交。"
+            exit 1
+          fi
+
+          echo "本地兜底检查通过（占位符已替换、头部 TAG 与 conf 一致）" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 与源仓逐字节比对
+        if: steps.src.outputs.mode == 'ok'
+        shell: bash
+        run: |
+          test -x ./sync-template.sh || { echo "::error::缺少可执行的 sync-template.sh"; exit 1; }
           ./sync-template.sh --check
+          echo "template.typ 与 typst-notes@${{ steps.conf.outputs.tag }} 一致" >> "$GITHUB_STEP_SUMMARY"
