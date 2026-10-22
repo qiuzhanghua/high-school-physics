@@ -5,7 +5,10 @@
 ## 目录结构
 
 ```
-template.typ              文档模板（页面、字体、标题样式、定义/定理等环境）
+template.typ              文档模板（自动生成，请勿手工修改）
+.template.conf            生成配置：TAG / 公式编号（本仓 none）/ 正文字号
+sync-template.sh          从 typst-notes 重新生成 template.typ（bash）
+sync-template.ps1         同上（Windows PowerShell）
 卷扬机收绳拉船.typ          正文文档
 排球水平发球最低高度.typ     正文文档
 figures/                  插图（CeTZ 绘制，可单独编译预览）
@@ -15,6 +18,8 @@ figures/                  插图（CeTZ 绘制，可单独编译预览）
 build                     批量编译脚本（Linux / macOS / Git Bash）
 build.ps1                 批量编译脚本（Windows PowerShell）
 ```
+
+共 2 篇文档（不含模板），全量实测 13 页。
 
 ## 编译
 
@@ -27,6 +32,23 @@ build.ps1                 批量编译脚本（Windows PowerShell）
 PowerShell 下用 `./build.ps1`（参数为 `-Only 卷扬机收绳拉船`、`-OutputDir dist`）。
 
 编译后 PDF 与源文件同目录（`.gitignore` 已忽略 `*.pdf`）。
+
+## 模板同步
+
+`template.typ` 由 [typst-notes](https://github.com/qiuzhanghua/typst-notes) 的 `lib.typ`
+按本仓 `.template.conf` 生成，**请勿手工修改**：
+
+```bash
+./sync-template.sh          # 重新生成（内容不变则不写盘）
+./sync-template.sh --check  # 只校验，不一致退出码 1
+```
+
+CI（`.github/workflows/template.yml`）在源仓可达时逐字节比对；源仓不可达时只发
+`::warning::` 并在 Job Summary 写明「未校验」，同时永远执行不依赖网络的兜底检查
+（不许残留 `@@KEY@@` 占位符、头部 `typst-notes@<TAG>` 须与 conf 一致）。
+
+文档内不要再写 `#set text(font: ...)` / `#set page(...)` / `#set math.equation(...)`：
+页面、字体列表与公式编号都由模板统一提供。
 
 ## 字体依赖：思源宋体（Source Han Serif）
 
@@ -204,3 +226,7 @@ typst compile --package-path /path/to/packages 卷扬机收绳拉船.typ
 只要该目录下是 `preview/cetz/0.5.2/...` 与 `preview/oxifmt/1.0.0/...` 这一结构即可
 （缺 `oxifmt` 会报 `failed to load package`）。本仓库**不再**内置该目录，
 需要时请自行放置，或用上面的方式装进缓存。
+
+## 许可
+
+[MIT](LICENSE)
