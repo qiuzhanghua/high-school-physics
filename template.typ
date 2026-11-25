@@ -1,6 +1,6 @@
 // ============================================================
 // template.typ — 自动生成，请勿手工修改
-// 源：typst-notes@v1.0.2（lib.typ）
+// 源：typst-notes@v1.0.3（lib.typ）
 // 重新生成：./sync-template.sh（Windows 用 ./sync-template.ps1）
 // 本仓参数：EQNUM=none TEXTSIZE=12pt
 // ============================================================
@@ -68,8 +68,9 @@
 #let cjk-font = "Source Han Serif"
 
 // ---- 数学模式内的中文 ----
-// 数学模式不继承 text-fonts：$x_("极值点")$ 里的中文会落到系统默认黑体，
-// 与正文宋体不一致。数学模式内写中文请用 #cjk[极值点]。
+// 数学模式默认不继承 text-fonts（只按数学字体找字，缺字落到系统第一个 CJK 字体，
+// 本机是 AR PL UKai 楷体）。template 内已用 `show math.equation: set text(font: text-fonts)`
+// 兜底，一般直接写中文即可。需要强制单一字体（例如公式里换一种字体）时用 #cjk[极值点]。
 #let cjk(body) = text(font: cjk-font, body)
 
 // ---- 填空横线 ----
@@ -261,6 +262,11 @@
     size: text-size,
     lang: "zh",
   )
+
+  // 数学模式里直接写中文（如 `$x = 1 quad 即 quad y$`）不继承 text-fonts，
+  // 缺字时会落到系统第一个 CJK 字体（本机是 AR PL UKai，楷体），与正文宋体混排很扎眼。
+  // 这里把同一份字体列表也挂到数学模式：数学字体仍在首位，公式字形不变，只有中文回退到宋体。
+  show math.equation: set text(font: text-fonts)
 
   set math.equation(numbering: equation-numbering)
 

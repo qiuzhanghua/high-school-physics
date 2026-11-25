@@ -13,7 +13,7 @@
 #   3. 从 GitHub 取（$TYPST_NOTES_REPO，默认 qiuzhanghua/typst-notes）
 #
 # 各仓差异全部来自仓库根目录的 .template.conf 的 KEY=VALUE：
-#   TAG=v1.0.2          源仓版本（不同占位符替换）
+#   TAG=v1.0.3          源仓版本（不同占位符替换）
 #   EQNUM='"(1)"'       替换 lib.typ 里的 @@EQNUM@@（公式编号）
 #   TEXTSIZE=16pt       替换 @@TEXTSIZE@@（正文字号）
 # conf 里没写的占位符用下面的 DEFAULTS 兜底；想新增可变项，在 lib.typ 写
